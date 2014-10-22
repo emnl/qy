@@ -7,18 +7,19 @@ java_import java.util.concurrent.Callable
 module Qy
   class Executor
     def initialize(options)
-      @reader_class = options[:reader].keys.first
-      @writer_class = options[:writer].keys.first
-      @reader_instances = options[:reader].values.first
-      @writer_instances = options[:writer].values.first
-      @processor_class = options[:processor].keys.first
-      @processor_options = options[:processor].values.first
+      @reader_class       = options[:reader].keys.first
+      @writer_class       = options[:writer].keys.first
+      @reader_instances   = options[:reader].values.first
+      @writer_instances   = options[:writer].values.first
+      @processor_class    = options[:processor].keys.first
+      @processor_options  = options[:processor].values.first
+      @executor_options   = options[:options] || {}
 
       unless @reader_instances.length == @writer_instances.length
         raise "Uneven readers and writers"
       end
 
-      max_threads = options[:options][:threads] || 4
+      max_threads = @executor_options[:workers] || 1
       @thread_pool = Executors.newFixedThreadPool(max_threads)
       @pool = ExecutorCompletionService.new(@thread_pool)
       @pool_size = @reader_instances.length
