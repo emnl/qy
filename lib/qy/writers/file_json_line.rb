@@ -2,9 +2,9 @@ require 'json'
 
 module Qy
   module Writers
-    class JsonLine < Writer
+    class FileJsonLine < Writer
       def initialize(options)
-        @file = File.open(options[:file], "w")
+        @file = File.open(options, "w")
       end
 
       def write_entry(entry)

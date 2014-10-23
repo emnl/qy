@@ -7,32 +7,31 @@ java_import java.util.concurrent.Callable
 module Qy
   class Executor
     def initialize(options)
-      @reader_class       = options[:reader].keys.first
-      @writer_class       = options[:writer].keys.first
-      @reader_instances   = options[:reader].values.first
-      @writer_instances   = options[:writer].values.first
-      @processor_class    = options[:processor].keys.first
-      @processor_options  = options[:processor].values.first
-      @executor_options   = options[:options] || {}
+      @reader_class     = options[:readers].keys.first
+      @writer_class     = options[:writers].keys.first
+      @reader_instances = options[:readers].values.first.clone
+      @writer_instances = options[:writers].values.first.clone
+      @processor        = options[:processor]
+      @options          = options[:options] || {}
 
       unless @reader_instances.length == @writer_instances.length
-        raise "Uneven readers and writers"
+        raise "There must be an equal number of readers and writers."
       end
 
-      max_threads = @executor_options[:workers] || 1
+      max_threads = @options[:workers] || 1
       @thread_pool = Executors.newFixedThreadPool(max_threads)
-      @pool = ExecutorCompletionService.new(@thread_pool)
-      @pool_size = @reader_instances.length
     end
 
     def execute
       raise "The executor has already been executed" if @thread_pool.isShutdown
+      pool = ExecutorCompletionService.new(@thread_pool)
+      work_size = @reader_instances.length
+
       until @reader_instances.empty? || @writer_instances.empty?
-        @pool.java_send(:submit, [Callable.java_class], Worker.new(@reader_class, @writer_class, @reader_instances.shift, @writer_instances.shift, @processor_class, @processor_options))
+        pool.java_send(:submit, [Callable.java_class], Worker.new(@reader_class, @writer_class, @reader_instances.shift, @writer_instances.shift, @processor))
       end
-      @pool_size.times do
-        @pool.take
-      end
+
+      work_size.times { pool.take }
       @thread_pool.shutdown
     end
   end

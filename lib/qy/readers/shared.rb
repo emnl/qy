@@ -2,11 +2,11 @@ module Qy
   module Readers
     class Shared < Reader
       def initialize(options)
-        @read_entry = options[:read_entry]
+        @lambda = options
       end
 
       def read_entry
-        @read_entry.call
+        @lambda.call
       end
     end
   end

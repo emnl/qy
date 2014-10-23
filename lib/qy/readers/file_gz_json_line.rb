@@ -7,9 +7,9 @@ java_import java.io.InputStreamReader
 
 module Qy
   module Readers
-    class GzJsonLine < Reader
+    class FileGzJsonLine < Reader
       def initialize(options)
-        @gzip = GZIPInputStream.new(FileInputStream.new(options[:file]))
+        @gzip = GZIPInputStream.new(FileInputStream.new(options))
         @br = BufferedReader.new(InputStreamReader.new(@gzip))
       end
 

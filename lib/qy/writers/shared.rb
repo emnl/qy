@@ -2,11 +2,11 @@ module Qy
   module Writers
     class Shared < Writer
       def initialize(options)
-        @write_entry = options[:write_entry]
+        @lambda = options
       end
 
       def write_entry(entry)
-        @write_entry.call(entry)
+        @lambda.call(entry)
       end
     end
   end

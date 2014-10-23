@@ -2,9 +2,9 @@ require 'json'
 
 module Qy
   module Readers
-    class JsonLine < Reader
+    class FileJsonLine < Reader
       def initialize(options)
-        @file = File.open(options[:file], "r")
+        @file = File.open(options, "r")
       end
 
       def read_entry
