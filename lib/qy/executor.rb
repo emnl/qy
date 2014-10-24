@@ -31,7 +31,7 @@ module Qy
         pool.java_send(:submit, [Callable.java_class], Worker.new(@reader_class, @writer_class, @reader_instances.shift, @writer_instances.shift, @processor))
       end
 
-      work_size.times { pool.take }
+      work_size.times { pool.take.get }
       @thread_pool.shutdown
     end
   end
