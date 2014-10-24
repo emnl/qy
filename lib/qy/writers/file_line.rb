@@ -1,7 +1,10 @@
+require 'fileutils'
+
 module Qy
   module Writers
     class FileLine < Writer
       def initialize(options)
+        FileUtils.mkdir_p(File.dirname(options))
         @file = File.open(options, "w")
       end
 
